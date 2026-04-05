@@ -10,11 +10,10 @@ export async function POST(req: Request) {
     const RESEND_API_KEY = process.env.RESEND_API_KEY
 
     if (!RESEND_API_KEY) {
-      console.log("No RESEND_API_KEY - contact form submission:", { name, email, message })
       return NextResponse.json({ error: "Email not configured" }, { status: 500 })
     }
 
-    await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,8 +28,14 @@ export async function POST(req: Request) {
       }),
     })
 
+    const data = await res.json()
+
+    if (!res.ok) {
+      return NextResponse.json({ error: "Email failed", details: data }, { status: 500 })
+    }
+
     return NextResponse.json({ ok: true })
-  } catch (e) {
-    return NextResponse.json({ error: "Server error" }, { status: 500 })
+  } catch (e: any) {
+    return NextResponse.json({ error: "Server error", details: e.message }, { status: 500 })
   }
 }
