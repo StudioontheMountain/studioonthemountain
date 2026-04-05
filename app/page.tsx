@@ -9,9 +9,9 @@ const products = {
     { name: "HowDoYouSpell", desc: "Spelling reference with regional variants across US, UK, CA & AU.", url: "https://www.howdoyouspell.app" },
   ],
   "Apps & tools": [
-    { name: "helloneko", desc: "Fast, private file conversion in the browser.", url: "https://www.helloneko.app" },
-    { name: "HabitHill", desc: "Minimal habit tracking, no accounts required.", url: "https://www.habithill.app" },
-    { name: "EasyExpenseTracker", desc: "Simple expense logging with full data privacy.", url: "https://www.easyexpensetracker.app" },
+    { name: "helloneko", desc: "AI-assisted file conversion. Private, fast, no data stored. Pay per use.", url: "https://www.helloneko.app" },
+    { name: "HabitHill", desc: "AI-assisted habit tracking. One-time license, no subscriptions, fully private.", url: "https://www.habithill.app" },
+    { name: "EasyExpenseTracker", desc: "AI-assisted expense logging. One-time license, no subscriptions, your data stays yours.", url: "https://www.easyexpensetracker.app" },
   ],
   "Media": [
     { name: "MarketingWins", desc: "AI-powered marketing tips and strategy tools.", url: "https://www.marketingwins.app" },
@@ -104,7 +104,7 @@ export default function Home() {
       <section id="about" style={{ padding: "0 clamp(1.25rem, 5vw, 2.5rem) 3rem", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
         <div style={{ ...orbitron, fontSize: 10, letterSpacing: "0.3em", color: "#8b7e6a", textTransform: "uppercase" as const, marginBottom: "1.5rem" }}>About</div>
         <p style={{ ...outfit, fontSize: 15, fontWeight: 300, color: "#6b7280", lineHeight: 1.8 }}>
-          Studio on the Mountain is a portfolio company building web applications and digital products designed for acquisition. Each product in our portfolio demonstrates a distinct revenue model and serves a defined market. We focus on clarity, privacy, and tools that make complex things simple.
+          Studio on the Mountain is a portfolio company building AI-assisted web applications and digital products designed for acquisition. Each product in our portfolio demonstrates a distinct revenue model and serves a defined market. We build with AI at the core — using it to create, automate, and scale products that would traditionally require a full team. We focus on clarity, privacy, and tools that make complex things simple.
         </p>
       </section>
 
