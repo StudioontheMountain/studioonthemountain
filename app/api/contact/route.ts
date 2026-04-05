@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Studio on the Mountain <onboarding@resend.dev>",
+        from: "Studio on the Mountain <noreply@marketingwins.app>",
         to: "hello@studioonthemountain.com",
         subject: `Contact from ${name}`,
         text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
