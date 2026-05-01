@@ -159,7 +159,7 @@ export default function Home() {
           zIndex: 3,
           maxWidth: 720,
           margin: "0 auto",
-          padding: "6rem 2rem",
+          padding: "2rem 2rem",
           width: "100%",
         }}>
           <h1 style={{
