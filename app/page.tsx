@@ -85,7 +85,7 @@ export default function Home() {
       {/* HERO */}
       <section style={{
         position: "relative",
-        minHeight: "55vh",
+        minHeight: "45vh",
         display: "flex",
         alignItems: "center",
         overflow: "hidden",
