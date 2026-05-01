@@ -1,139 +1,579 @@
 "use client"
 import { useState } from "react"
 
-const products = {
-  "Reference & learning": [
-    { name: "InsuranceTerms", desc: "Insurance terminology explained in plain English with real examples.", url: "https://www.insuranceterms.app" },
-    { name: "MoneyTerms", desc: "Financial concepts made accessible for everyday decisions.", url: "https://www.moneyterms.app" },
-    { name: "RealEstateTerms", desc: "Real estate jargon decoded for buyers, sellers, and investors.", url: "https://www.realestateterms.app" },
-    { name: "HowDoYouSpell", desc: "Spelling reference with regional variants across US, UK, CA & AU.", url: "https://www.howdoyouspell.app" },
-  ],
-  "Apps & tools": [
-    { name: "helloneko", desc: "AI-assisted file conversion. Private, fast, no data stored. Pay per use.", url: "https://www.helloneko.app" },
-    { name: "HabitHill", desc: "AI-assisted habit tracking. One-time license, no subscriptions, fully private.", url: "https://www.habithill.app" },
-    { name: "EasyExpenseTracker", desc: "AI-assisted expense logging. One-time license, no subscriptions, your data stays yours.", url: "https://www.easyexpensetracker.app" },
-  ],
-  "Media": [
-    { name: "MarketingWins", desc: "AI-powered marketing tips and strategy tools.", url: "https://www.marketingwins.app" },
-    { name: "rockam.com", desc: "Rock music content and community.", url: "https://www.rockam.com" },
-    { name: "CountryMusicAwards", desc: "Country music news and awards coverage.", url: "https://www.countrymusicawards.com" },
-  ],
-}
+const tools = [
+  { name: "Marketing Wins", desc: "AI-personalized marketing tactics for small businesses. Hundreds of proven plays, tailored to your business type. One-time license.", domain: "marketingwins.app", url: "https://www.marketingwins.app" },
+  { name: "EasyExpenseTracker", desc: "An expense tracker that keeps your data on your phone. No cloud sync, no subscriptions, no surveillance. One-time purchase.", domain: "easyexpensetracker.app", url: "https://www.easyexpensetracker.app" },
+  { name: "HabitHill", desc: "Habit tracking with AI-assisted nudges. Private, lightweight, no subscription required. One-time license.", domain: "habithill.app", url: "https://www.habithill.app" },
+  { name: "helloneko", desc: "AI-assisted file conversion. Pay per use. Files are processed and discarded — nothing stored, nothing tracked.", domain: "helloneko.app", url: "https://www.helloneko.app" },
+]
 
-const orbitron = { fontFamily: "'Orbitron', sans-serif" }
-const outfit = { fontFamily: "'Outfit', sans-serif" }
+const otherProjects = [
+  { name: "InsuranceTerms", desc: "Insurance terminology in plain English.", url: "https://www.insuranceterms.app" },
+  { name: "MoneyTerms", desc: "Financial concepts made accessible.", url: "https://www.moneyterms.app" },
+  { name: "RealEstateTerms", desc: "Real estate jargon decoded.", url: "https://www.realestateterms.app" },
+  { name: "HowDoYouSpell", desc: "Spelling reference across US, UK, CA, AU.", url: "https://www.howdoyouspell.app" },
+  { name: "CountryMusicAwards", desc: "Country music news and awards coverage.", url: "https://www.countrymusicawards.com" },
+  { name: "rockam", desc: "Rock music content and community.", url: "https://www.rockam.com" },
+]
+
+const contactProducts = [
+  { value: "marketingwins", label: "Marketing Wins" },
+  { value: "easyexpensetracker", label: "EasyExpenseTracker" },
+  { value: "habithill", label: "HabitHill" },
+  { value: "helloneko", label: "helloneko" },
+  { value: "insuranceterms", label: "InsuranceTerms" },
+  { value: "moneyterms", label: "MoneyTerms" },
+  { value: "realestateterms", label: "RealEstateTerms" },
+  { value: "howdoyouspell", label: "HowDoYouSpell" },
+  { value: "countrymusicawards", label: "CountryMusicAwards" },
+  { value: "rockam", label: "rockam" },
+  { value: "studio", label: "Studio on the Mountain (general)" },
+]
+
+const fontStack = `-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif`
+const displayFontStack = `-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif`
 
 export default function Home() {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" })
+  const [formData, setFormData] = useState({ name: "", email: "", message: "", product: "" })
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [error, setError] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSending(true)
+    setError(false)
     try {
+      const productLabel = contactProducts.find(p => p.value === formData.product)?.label || "General"
+      const composedMessage = `[${productLabel}]\n\n${formData.message}`
+
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: composedMessage,
+        }),
       })
       if (res.ok) {
         setSent(true)
-        setFormData({ name: "", email: "", message: "" })
+        setFormData({ name: "", email: "", message: "", product: "" })
+      } else {
+        setError(true)
       }
     } catch (err) {
       console.error(err)
+      setError(true)
     }
     setSending(false)
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: "linear-gradient(180deg, #f7f5f0 0%, #eae6dd 100%)" }}>
-      {/* Nav */}
-      <nav style={{ padding: "1.25rem clamp(1.25rem, 5vw, 2.5rem)", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 900, margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <svg width="28" height="28" viewBox="0 0 28 28">
-            <polygon points="14,2 26,26 2,26" fill="none" stroke="#4a5568" strokeWidth="1.5"/>
-            <circle cx="14" cy="15" r="3" fill="none" stroke="#4a5568" strokeWidth="1"/>
-            <line x1="14" y1="12" x2="14" y2="8" stroke="#4a5568" strokeWidth="1"/>
-          </svg>
-          <span style={{ ...orbitron, fontSize: 13, fontWeight: 500, letterSpacing: "0.12em", color: "#3d3d3d", textTransform: "uppercase" as const }}>Studio on the Mountain</span>
-        </div>
-        <div style={{ display: "flex", gap: "1.5rem" }}>
-          {["Portfolio", "About", "Contact"].map(s => (
-            <a key={s} href={`#${s.toLowerCase()}`} style={{ ...outfit, fontSize: 13, fontWeight: 300, color: "#6b7280", textDecoration: "none", letterSpacing: "0.04em" }}>{s}</a>
-          ))}
-        </div>
-      </nav>
+    <main style={{
+      minHeight: "100vh",
+      background: "#F5F1EA",
+      color: "#1B1B1F",
+      fontFamily: fontStack,
+      fontSize: 17,
+      lineHeight: 1.5,
+      WebkitFontSmoothing: "antialiased",
+      MozOsxFontSmoothing: "grayscale",
+    }}>
 
-      {/* Hero */}
-      <section style={{ padding: "5rem clamp(1.25rem, 5vw, 2.5rem) 4rem", textAlign: "center", maxWidth: 900, margin: "0 auto" }}>
-        <div style={{ ...orbitron, fontSize: 10, letterSpacing: "0.3em", color: "#8b7e6a", textTransform: "uppercase" as const, marginBottom: "1.5rem" }}>Digital products &middot; Designed for acquisition</div>
-        <h1 style={{ ...orbitron, fontSize: "clamp(24px, 4vw, 32px)", fontWeight: 400, color: "#2d2d2d", letterSpacing: "0.02em", margin: "0 0 1.25rem", lineHeight: 1.3 }}>
-          We build tools that<br/>make complex things simple
-        </h1>
-        <p style={{ ...outfit, fontSize: 15, fontWeight: 300, color: "#6b7280", maxWidth: 440, margin: "0 auto", lineHeight: 1.7 }}>
-          A portfolio of web applications, reference platforms, and digital products — crafted with precision.
-        </p>
+      {/* HERO */}
+      <section style={{
+        position: "relative",
+        minHeight: "78vh",
+        display: "flex",
+        alignItems: "center",
+        overflow: "hidden",
+        backgroundColor: "#c8c4b8",
+      }}>
+        <picture>
+          <source srcSet="/dune.webp" type="image/webp" />
+          <img
+            src="/dune.jpg"
+            alt=""
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              zIndex: 1,
+            }}
+          />
+        </picture>
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 2,
+          background: "linear-gradient(90deg, rgba(20, 22, 28, 0.55) 0%, rgba(20, 22, 28, 0.30) 50%, rgba(20, 22, 28, 0.10) 100%)",
+        }} />
+
+        {/* Header (positioned over hero) */}
+        <header style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          padding: "1.75rem 2rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          maxWidth: 1100,
+          margin: "0 auto",
+        }}>
+          <a href="/" style={{
+            fontSize: "1rem",
+            fontWeight: 500,
+            letterSpacing: "-0.005em",
+            color: "#FFFFFF",
+            textDecoration: "none",
+            textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
+          }}>Studio on the Mountain</a>
+          <nav style={{ display: "flex", gap: "2rem" }}>
+            {["Tools", "About", "Contact"].map(s => (
+              <a key={s} href={`#${s.toLowerCase()}`} style={{
+                fontSize: "0.95rem",
+                fontWeight: 400,
+                color: "rgba(255, 255, 255, 0.85)",
+                textDecoration: "none",
+                letterSpacing: "-0.005em",
+                textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
+              }}>{s}</a>
+            ))}
+          </nav>
+        </header>
+
+        <div style={{
+          position: "relative",
+          zIndex: 3,
+          maxWidth: 720,
+          margin: "0 auto",
+          padding: "6rem 2rem",
+          width: "100%",
+        }}>
+          <h1 style={{
+            fontFamily: displayFontStack,
+            fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+            fontWeight: 600,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            color: "#FFFFFF",
+            marginBottom: "1.75rem",
+            textShadow: "0 1px 2px rgba(0, 0, 0, 0.25), 0 2px 12px rgba(0, 0, 0, 0.2)",
+          }}>
+            We make useful AI tools for small business.
+          </h1>
+          <p style={{
+            fontSize: "1.2rem",
+            lineHeight: 1.5,
+            color: "rgba(255, 255, 255, 0.92)",
+            maxWidth: "32em",
+            textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
+            margin: 0,
+          }}>
+            A small studio. A few apps that earn their keep. Made with care, supported by humans.
+          </p>
+        </div>
       </section>
 
-      <div style={{ width: 40, height: 1, background: "#c4b99a", margin: "0 auto 3rem" }} />
+      {/* TOOLS */}
+      <section id="tools" style={{ padding: "5rem 0" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 2rem" }}>
+          <span style={{
+            fontSize: "0.85rem",
+            fontWeight: 500,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase" as const,
+            color: "#6B6B70",
+            marginBottom: "1.25rem",
+            display: "block",
+          }}>Tools</span>
+          <h2 style={{
+            fontFamily: displayFontStack,
+            fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+            fontWeight: 600,
+            letterSpacing: "-0.018em",
+            lineHeight: 1.05,
+            marginBottom: "1.5rem",
+            color: "#1B1B1F",
+          }}>What we make.</h2>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "2.5rem",
+            marginTop: "2rem",
+          }}>
+            {tools.map(tool => (
+              <a key={tool.name} href={tool.url} target="_blank" rel="noopener noreferrer" style={{
+                display: "block",
+                padding: "1.75rem",
+                backgroundColor: "rgba(255, 255, 255, 0.45)",
+                border: "1px solid rgba(27, 27, 31, 0.08)",
+                borderRadius: 14,
+                textDecoration: "none",
+                color: "inherit",
+                transition: "background-color 0.2s ease, transform 0.15s ease, border-color 0.2s ease",
+              }}>
+                <h3 style={{
+                  fontSize: "1.2rem",
+                  fontWeight: 500,
+                  letterSpacing: "-0.01em",
+                  marginBottom: "0.5rem",
+                  lineHeight: 1.2,
+                  color: "#1B1B1F",
+                }}>{tool.name}</h3>
+                <p style={{
+                  fontSize: "0.95rem",
+                  color: "#3A3A3F",
+                  lineHeight: 1.5,
+                  margin: 0,
+                }}>{tool.desc}</p>
+                <span style={{
+                  fontSize: "0.85rem",
+                  color: "#6B6B70",
+                  marginTop: "0.85rem",
+                  display: "block",
+                  letterSpacing: "-0.005em",
+                }}>{tool.domain}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* Portfolio */}
-      <section id="portfolio" style={{ padding: "0 clamp(1.25rem, 5vw, 2.5rem) 3rem", maxWidth: 900, margin: "0 auto" }}>
-        <div style={{ ...orbitron, fontSize: 10, letterSpacing: "0.3em", color: "#8b7e6a", textTransform: "uppercase" as const, marginBottom: "2rem", textAlign: "center" }}>Portfolio</div>
+      {/* OTHER PROJECTS */}
+      <section style={{ padding: "5rem 0" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 2rem" }}>
+          <span style={{
+            fontSize: "0.85rem",
+            fontWeight: 500,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase" as const,
+            color: "#6B6B70",
+            marginBottom: "1.25rem",
+            display: "block",
+          }}>Other Projects</span>
+          <h2 style={{
+            fontFamily: displayFontStack,
+            fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+            fontWeight: 600,
+            letterSpacing: "-0.018em",
+            lineHeight: 1.05,
+            marginBottom: "1.5rem",
+            color: "#1B1B1F",
+          }}>Other things we&rsquo;ve made.</h2>
+          <p style={{ color: "#3A3A3F", maxWidth: "36em", marginBottom: "1rem" }}>
+            Reference sites, content projects, and side experiments. Not the focus, but useful in their own ways.
+          </p>
 
-        {Object.entries(products).map(([category, items]) => (
-          <div key={category} style={{ marginBottom: "2rem" }}>
-            <div style={{ ...orbitron, fontSize: 10, color: "#8b7e6a", letterSpacing: "0.15em", textTransform: "uppercase" as const, marginBottom: "1rem" }}>{category}</div>
-            <div style={{ display: "grid", gridTemplateColumns: items.length <= 3 ? "repeat(3, 1fr)" : "repeat(2, 1fr)", gap: 12 }}>
-              {items.map(p => (
-                <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", background: "#fffdf8", border: "0.5px solid #ddd6c8", borderRadius: 10, padding: "1.25rem", transition: "border-color 0.2s" }}>
-                  <div style={{ ...outfit, fontSize: 14, fontWeight: 500, color: "#2d2d2d", marginBottom: 4 }}>{p.name}</div>
-                  <div style={{ ...outfit, fontSize: 12, fontWeight: 300, color: "#8b8178", lineHeight: 1.6 }}>{p.desc}</div>
-                </a>
-              ))}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1rem 2.5rem",
+            marginTop: "1.5rem",
+          }}>
+            {otherProjects.map(p => (
+              <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" style={{
+                display: "block",
+                padding: "0.85rem 0",
+                textDecoration: "none",
+                color: "inherit",
+                borderBottom: "1px solid rgba(27, 27, 31, 0.08)",
+              }}>
+                <span style={{
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                  letterSpacing: "-0.005em",
+                  color: "#1B1B1F",
+                }}>{p.name}</span>
+                <span style={{
+                  fontSize: "0.9rem",
+                  color: "#6B6B70",
+                  marginLeft: "0.5em",
+                }}>{p.desc}</span>
+              </a>
+            ))}
+          </div>
+
+          <p style={{
+            fontSize: "0.9rem",
+            color: "#6B6B70",
+            fontStyle: "italic",
+            marginTop: "1.5rem",
+          }}>More projects in development. Check back soon.</p>
+        </div>
+      </section>
+
+      {/* ABOUT */}
+      <section id="about" style={{ padding: "5rem 0" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 2rem" }}>
+          <span style={{
+            fontSize: "0.85rem",
+            fontWeight: 500,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase" as const,
+            color: "#6B6B70",
+            marginBottom: "1.25rem",
+            display: "block",
+          }}>About</span>
+          <h2 style={{
+            fontFamily: displayFontStack,
+            fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+            fontWeight: 600,
+            letterSpacing: "-0.018em",
+            lineHeight: 1.05,
+            marginBottom: "1.5rem",
+            color: "#1B1B1F",
+          }}>A small studio.</h2>
+          <p style={{ fontSize: "1.1rem", lineHeight: 1.6, color: "#3A3A3F", marginBottom: "1.25rem", maxWidth: "36em" }}>
+            Studio on the Mountain is a small independent studio. We build a handful of AI-assisted tools and reference sites, support them, and answer email when something breaks.
+          </p>
+          <p style={{ fontSize: "1.1rem", lineHeight: 1.6, color: "#3A3A3F", marginBottom: "1.25rem", maxWidth: "36em" }}>
+            We charge once when we can. We don&rsquo;t sync your data to our servers when we don&rsquo;t have to. We try to make tools that earn their keep instead of demanding your attention.
+          </p>
+          <p style={{ fontSize: "1.1rem", lineHeight: 1.6, color: "#3A3A3F", maxWidth: "36em", margin: 0 }}>
+            That&rsquo;s most of what there is to know.
+          </p>
+        </div>
+      </section>
+
+      {/* CONTACT */}
+      <section id="contact" style={{ padding: "5rem 0" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 2rem" }}>
+          <span style={{
+            fontSize: "0.85rem",
+            fontWeight: 500,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase" as const,
+            color: "#6B6B70",
+            marginBottom: "1.25rem",
+            display: "block",
+          }}>Contact</span>
+          <h2 style={{
+            fontFamily: displayFontStack,
+            fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+            fontWeight: 600,
+            letterSpacing: "-0.018em",
+            lineHeight: 1.05,
+            marginBottom: "1.5rem",
+            color: "#1B1B1F",
+          }}>Get in touch.</h2>
+          <p style={{ color: "#3A3A3F", marginBottom: "1rem" }}>
+            Questions, bug reports, press inquiries, or anything else. Pick the relevant product below and we&rsquo;ll route it correctly.
+          </p>
+
+          {sent ? (
+            <div style={{
+              padding: "1.5rem",
+              backgroundColor: "#E8F0E5",
+              color: "#2D4A3E",
+              border: "1px solid rgba(45, 74, 62, 0.2)",
+              borderRadius: 10,
+              maxWidth: 540,
+              marginTop: "2rem",
+            }}>
+              Thanks &mdash; we got it. We&rsquo;ll be in touch.
             </div>
-          </div>
-        ))}
+          ) : (
+            <form onSubmit={handleSubmit} style={{ marginTop: "2rem", maxWidth: 540 }}>
+
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label htmlFor="contact-product" style={{
+                  display: "block",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  marginBottom: "0.5rem",
+                  color: "#1B1B1F",
+                  letterSpacing: "-0.005em",
+                }}>Which product is this about?</label>
+                <select
+                  id="contact-product"
+                  required
+                  value={formData.product}
+                  onChange={e => setFormData(d => ({ ...d, product: e.target.value }))}
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 0.95rem",
+                    paddingRight: "2.5rem",
+                    fontFamily: "inherit",
+                    fontSize: "1rem",
+                    fontWeight: 400,
+                    color: "#1B1B1F",
+                    backgroundColor: "#FAF6EF",
+                    border: "1px solid rgba(27, 27, 31, 0.18)",
+                    borderRadius: 10,
+                    WebkitAppearance: "none",
+                    MozAppearance: "none",
+                    appearance: "none",
+                    backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1L6 6L11 1' stroke='%231B1B1F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>\")",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "right 1rem center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <option value="">Select one&hellip;</option>
+                  {contactProducts.map(p => (
+                    <option key={p.value} value={p.value}>{p.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label htmlFor="contact-name" style={{
+                  display: "block",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  marginBottom: "0.5rem",
+                  color: "#1B1B1F",
+                  letterSpacing: "-0.005em",
+                }}>Your name</label>
+                <input
+                  type="text"
+                  id="contact-name"
+                  required
+                  autoComplete="name"
+                  value={formData.name}
+                  onChange={e => setFormData(d => ({ ...d, name: e.target.value }))}
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 0.95rem",
+                    fontFamily: "inherit",
+                    fontSize: "1rem",
+                    fontWeight: 400,
+                    color: "#1B1B1F",
+                    backgroundColor: "#FAF6EF",
+                    border: "1px solid rgba(27, 27, 31, 0.18)",
+                    borderRadius: 10,
+                    outline: "none",
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label htmlFor="contact-email" style={{
+                  display: "block",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  marginBottom: "0.5rem",
+                  color: "#1B1B1F",
+                  letterSpacing: "-0.005em",
+                }}>Email</label>
+                <input
+                  type="email"
+                  id="contact-email"
+                  required
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={e => setFormData(d => ({ ...d, email: e.target.value }))}
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 0.95rem",
+                    fontFamily: "inherit",
+                    fontSize: "1rem",
+                    fontWeight: 400,
+                    color: "#1B1B1F",
+                    backgroundColor: "#FAF6EF",
+                    border: "1px solid rgba(27, 27, 31, 0.18)",
+                    borderRadius: 10,
+                    outline: "none",
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label htmlFor="contact-message" style={{
+                  display: "block",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  marginBottom: "0.5rem",
+                  color: "#1B1B1F",
+                  letterSpacing: "-0.005em",
+                }}>Message</label>
+                <textarea
+                  id="contact-message"
+                  required
+                  rows={6}
+                  value={formData.message}
+                  onChange={e => setFormData(d => ({ ...d, message: e.target.value }))}
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 0.95rem",
+                    fontFamily: "inherit",
+                    fontSize: "1rem",
+                    fontWeight: 400,
+                    color: "#1B1B1F",
+                    backgroundColor: "#FAF6EF",
+                    border: "1px solid rgba(27, 27, 31, 0.18)",
+                    borderRadius: 10,
+                    outline: "none",
+                    minHeight: 140,
+                    resize: "vertical",
+                    lineHeight: 1.5,
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={sending}
+                style={{
+                  display: "inline-block",
+                  backgroundColor: "#1B1B1F",
+                  color: "#F5F1EA",
+                  padding: "0.85rem 1.75rem",
+                  borderRadius: 999,
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                  letterSpacing: "-0.003em",
+                  border: "none",
+                  cursor: sending ? "default" : "pointer",
+                  fontFamily: "inherit",
+                  opacity: sending ? 0.6 : 1,
+                }}
+              >
+                {sending ? "Sending\u2026" : "Send message"}
+              </button>
+
+              {error && (
+                <div style={{
+                  marginTop: "1rem",
+                  padding: "0.85rem 1rem",
+                  backgroundColor: "#F4E4E4",
+                  color: "#6B2D2D",
+                  border: "1px solid rgba(107, 45, 45, 0.2)",
+                  borderRadius: 10,
+                  fontSize: "0.95rem",
+                }}>
+                  Something went wrong. Please try again or email us directly.
+                </div>
+              )}
+            </form>
+          )}
+        </div>
       </section>
 
-      <div style={{ width: 40, height: 1, background: "#c4b99a", margin: "0 auto 3rem" }} />
-
-      {/* About */}
-      <section id="about" style={{ padding: "0 clamp(1.25rem, 5vw, 2.5rem) 3rem", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ ...orbitron, fontSize: 10, letterSpacing: "0.3em", color: "#8b7e6a", textTransform: "uppercase" as const, marginBottom: "1.5rem" }}>About</div>
-        <p style={{ ...outfit, fontSize: 15, fontWeight: 300, color: "#6b7280", lineHeight: 1.8 }}>
-          Studio on the Mountain is a portfolio company building AI-assisted web applications and digital products designed for acquisition. Each product in our portfolio demonstrates a distinct revenue model and serves a defined market. We build with AI at the core — using it to create, automate, and scale products that would traditionally require a full team. We focus on clarity, privacy, and tools that make complex things simple.
-        </p>
-      </section>
-
-      <div style={{ width: 40, height: 1, background: "#c4b99a", margin: "0 auto 3rem" }} />
-
-      {/* Contact */}
-      <section id="contact" style={{ padding: "0 clamp(1.25rem, 5vw, 2.5rem) 3rem", maxWidth: 440, margin: "0 auto" }}>
-        <div style={{ ...orbitron, fontSize: 10, letterSpacing: "0.3em", color: "#8b7e6a", textTransform: "uppercase" as const, marginBottom: "2rem", textAlign: "center" }}>Get in touch</div>
-        {sent ? (
-          <div style={{ ...outfit, textAlign: "center", color: "#6b7280", fontSize: 15, fontWeight: 300, padding: "2rem 0" }}>
-            Message sent. We will be in touch.
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <input type="text" required placeholder="Your name" value={formData.name} onChange={e => setFormData(d => ({ ...d, name: e.target.value }))} style={{ ...outfit, background: "#fffdf8", border: "0.5px solid #ddd6c8", borderRadius: 8, padding: "10px 14px", fontSize: 13, fontWeight: 300, color: "#3d3d3d", outline: "none" }} />
-            <input type="email" required placeholder="Your email" value={formData.email} onChange={e => setFormData(d => ({ ...d, email: e.target.value }))} style={{ ...outfit, background: "#fffdf8", border: "0.5px solid #ddd6c8", borderRadius: 8, padding: "10px 14px", fontSize: 13, fontWeight: 300, color: "#3d3d3d", outline: "none" }} />
-            <textarea required placeholder="Your message" rows={4} value={formData.message} onChange={e => setFormData(d => ({ ...d, message: e.target.value }))} style={{ ...outfit, background: "#fffdf8", border: "0.5px solid #ddd6c8", borderRadius: 8, padding: "10px 14px", fontSize: 13, fontWeight: 300, color: "#3d3d3d", outline: "none", resize: "vertical" }} />
-            <button type="submit" disabled={sending} style={{ ...orbitron, background: "#3d3d3d", color: "#f7f5f0", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 11, fontWeight: 500, cursor: "pointer", letterSpacing: "0.1em", textTransform: "uppercase" as const, opacity: sending ? 0.6 : 1 }}>
-              {sending ? "Sending..." : "Send message"}
-            </button>
-          </form>
-        )}
-      </section>
-
-      {/* Footer */}
-      <footer style={{ padding: "2rem clamp(1.25rem, 5vw, 2.5rem)", borderTop: "0.5px solid #ddd6c8", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 900, margin: "0 auto" }}>
-        <span style={{ ...outfit, fontSize: 11, fontWeight: 300, color: "#8b8178" }}>&copy; {new Date().getFullYear()} Studio on the Mountain</span>
-        <span style={{ ...orbitron, fontSize: 9, letterSpacing: "0.15em", color: "#8b8178", textTransform: "uppercase" as const }}>SOTM</span>
+      {/* FOOTER */}
+      <footer style={{
+        borderTop: "1px solid rgba(27, 27, 31, 0.08)",
+        padding: "2.5rem 2rem 2rem",
+        fontSize: "0.85rem",
+        color: "#6B6B70",
+        textAlign: "center",
+      }}>
+        <div>&copy; {new Date().getFullYear()} Studio on the Mountain</div>
       </footer>
+
     </main>
   )
 }
