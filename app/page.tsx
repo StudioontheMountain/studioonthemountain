@@ -82,10 +82,33 @@ export default function Home() {
       MozOsxFontSmoothing: "grayscale",
     }}>
 
+      <style>{`
+        @media (max-width: 640px) {
+          .sotm-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.75rem !important;
+            padding: 1.25rem 1.5rem !important;
+          }
+          .sotm-header nav {
+            gap: 1.25rem !important;
+          }
+          .sotm-hero-text {
+            padding: 5rem 1.5rem 2rem 1.5rem !important;
+          }
+          .sotm-hero-h1 {
+            font-size: clamp(1.75rem, 9vw, 2.5rem) !important;
+          }
+          .sotm-hero-lede {
+            font-size: 1rem !important;
+          }
+        }
+      `}</style>
+
       {/* HERO */}
       <section style={{
         position: "relative",
-        minHeight: "35vh",
+        minHeight: "55vh",
         display: "flex",
         alignItems: "center",
         overflow: "hidden",
@@ -119,7 +142,7 @@ export default function Home() {
         }} />
 
         {/* Header (positioned over hero) */}
-        <header style={{
+        <header className="sotm-header" style={{
           position: "absolute",
           top: 0,
           left: 0,
@@ -154,7 +177,7 @@ export default function Home() {
           </nav>
         </header>
 
-        <div style={{
+        <div className="sotm-hero-text" style={{
           position: "relative",
           zIndex: 3,
           maxWidth: 720,
@@ -162,7 +185,7 @@ export default function Home() {
           padding: "2rem 2rem",
           width: "100%",
         }}>
-          <h1 style={{
+          <h1 className="sotm-hero-h1" style={{
             fontFamily: displayFontStack,
             fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
             fontWeight: 600,
@@ -174,7 +197,7 @@ export default function Home() {
           }}>
             We make useful AI tools for small business.
           </h1>
-          <p style={{
+          <p className="sotm-hero-lede" style={{
             fontSize: "1.2rem",
             lineHeight: 1.5,
             color: "rgba(255, 255, 255, 0.92)",
